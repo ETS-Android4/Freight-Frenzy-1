@@ -33,9 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -61,6 +59,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
     private DcMotor motorLeftDown = null;
     private DcMotor motorRightUp = null;
     private DcMotor motorRightDown = null;
+    private DcMotor motorXrail = null;
+    private DcMotor motorSpinner = null;
 
     @Override
     public void runOpMode() {
@@ -74,9 +74,13 @@ public class BasicOpMode_Linear extends LinearOpMode {
         motorRightUp = hardwareMap.get(DcMotor.class, "right_motor_up");
         motorLeftDown = hardwareMap.get(DcMotor.class, "left_motor_down");
         motorRightDown = hardwareMap.get(DcMotor.class, "right_motor_down");
+        motorXrail = hardwareMap.get(DcMotor.class, "xrail_motor");
+        motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
 
         double motorSpeed = 0.1;
 
+        motorXrail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -84,7 +88,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
         motorRightUp.setDirection(DcMotor.Direction.REVERSE);
         motorLeftDown.setDirection(DcMotor.Direction.FORWARD);
         motorRightDown.setDirection(DcMotor.Direction.REVERSE);
-
+        motorXrail.setDirection(DcMotor.Direction.REVERSE);
+        motorSpinner.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Wait for the game to start (driver presses PLAY)
@@ -101,8 +106,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
             }
 
             // Setup a variable for each drive wheel to save power level for telemetry
-            double leftPower;
-            double rightPower;
+//            double leftPower;
+//            double rightPower;
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -123,6 +128,9 @@ public class BasicOpMode_Linear extends LinearOpMode {
             motorRightUp.setPower(motorSpeed * gamepad1.left_stick_y);
             motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_y);
             motorRightDown.setPower(motorSpeed * gamepad1.left_stick_y);
+            motorXrail.setPower(motorSpeed * gamepad2.right_stick_y);
+            motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
+
 
 
             if (gamepad1.left_stick_x > 0.05 || gamepad1.left_stick_x < -0.05 ) {
@@ -154,6 +162,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
             telemetry.addData("right_stick_x", "%.3f", gamepad1.right_stick_x);
             telemetry.addData("right_bumper", gamepad1.right_bumper);
             telemetry.addData("left_bumper", gamepad1.left_bumper);
+            telemetry.addData("xrail_motor", gamepad2.right_stick_y);
+            telemetry.addData("spinner_motor", gamepad2.left_stick_x);
             telemetry.update();
         }
     }
