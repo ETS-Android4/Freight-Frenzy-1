@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -56,8 +57,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor motorLeftUp = null;
+    private DcMotor motorLeftDown = null;
+    private DcMotor motorRightUp = null;
+    private DcMotor motorRightDown = null;
 
     @Override
     public void runOpMode() {
@@ -67,13 +70,22 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        motorLeftUp = hardwareMap.get(DcMotor.class, "left_motor_up");
+        motorRightUp = hardwareMap.get(DcMotor.class, "right_motor_up");
+        motorLeftDown = hardwareMap.get(DcMotor.class, "left_motor_down");
+        motorRightDown = hardwareMap.get(DcMotor.class, "right_motor_down");
+
+        double motorSpeed = 0.1;
+
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftUp.setDirection(DcMotor.Direction.FORWARD);
+        motorRightUp.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftDown.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDown.setDirection(DcMotor.Direction.REVERSE);
+
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -81,6 +93,12 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            if (gamepad1.right_bumper) {
+                motorSpeed = .2;
+            }
+            if (gamepad1.left_bumper) {
+                motorSpeed = 0.1;
+            }
 
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
@@ -91,23 +109,51 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+//            double drive = -gamepad1.left_stick_y;
+//            double turn  =  gamepad1.right_stick_x;
+//            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
+//            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
+            //moves mecanum wheels forward and backward
+            motorLeftUp.setPower(motorSpeed * gamepad1.left_stick_y);
+            motorRightUp.setPower(motorSpeed * gamepad1.left_stick_y);
+            motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_y);
+            motorRightDown.setPower(motorSpeed * gamepad1.left_stick_y);
+
+
+            if (gamepad1.left_stick_x > 0.05 || gamepad1.left_stick_x < -0.05 ) {
+                //moves mecanum wheels left and right
+                motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_x );
+                motorRightDown.setPower(motorSpeed * gamepad1.left_stick_x * -1);
+                motorLeftUp.setPower(motorSpeed * gamepad1.left_stick_x * -1);
+                motorRightUp.setPower(motorSpeed * gamepad1.left_stick_x );
+            }
+
+            //turn robot clockwise
+            if (gamepad1.right_stick_x !=0) {
+                motorLeftDown.setPower(motorSpeed * gamepad1.right_stick_x * -1);
+                motorRightDown.setPower(motorSpeed * gamepad1.right_stick_x );
+                motorLeftUp.setPower(motorSpeed * gamepad1.right_stick_x * -1);
+                motorRightUp.setPower(motorSpeed * gamepad1.right_stick_x );
+
+            }
 
             // Send calculated power to wheels
-            leftDrive.setPower(leftPower);
-            rightDrive.setPower(rightPower);
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("Motor Speed", motorSpeed);
+            telemetry.addData("left_stick_y", "%.3f", gamepad1.left_stick_y);
+            telemetry.addData("left_stick_x", "%.3f", gamepad1.left_stick_x);
+            telemetry.addData("right_stick_x", "%.3f", gamepad1.right_stick_x);
+            telemetry.addData("right_bumper", gamepad1.right_bumper);
+            telemetry.addData("left_bumper", gamepad1.left_bumper);
             telemetry.update();
         }
     }
