@@ -27,11 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class BasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
@@ -77,10 +77,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
         motorXrail = hardwareMap.get(DcMotor.class, "xrail_motor");
         motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
 
-        double motorSpeed = 0.2;
-
+        double motorSpeed = 1;
+        double xrailSpeed= .5;
         motorXrail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -99,10 +99,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (gamepad1.right_bumper) {
-                motorSpeed = .4;
+                motorSpeed = 1;
             }
             if (gamepad1.left_bumper) {
-                motorSpeed = 0.2;
+                motorSpeed = 0.5;
             }
 
             // Setup a variable for each drive wheel to save power level for telemetry
@@ -128,7 +128,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
             motorRightUp.setPower(motorSpeed * gamepad1.left_stick_y);
             motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_y);
             motorRightDown.setPower(motorSpeed * gamepad1.left_stick_y);
-            motorXrail.setPower(motorSpeed * gamepad2.right_stick_y);
+            motorXrail.setPower(xrailSpeed * gamepad2.right_stick_y);
             motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
 
 
