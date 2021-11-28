@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 public class Original {
 
     /**
@@ -14,15 +13,15 @@ public class Original {
      * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
      * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
      * class is instantiated on the Robot Controller and executed.
-     *
+     * <p>
      * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
      * It includes all the skeletal structure that all linear OpModes contain.
-     *
+     * <p>
      * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
      * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
      */
 
-    @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+    @TeleOp(name = "Basic: Linear OpMode", group = "Linear Opmode")
 //@Disabled
     public class BasicOpMode_Linear extends LinearOpMode {
 
@@ -50,10 +49,10 @@ public class Original {
             motorRightDown = hardwareMap.get(DcMotor.class, "right_motor_down");
             motorXrail = hardwareMap.get(DcMotor.class, "xrail_motor");
             motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
-            servoTilter= hardwareMap.get(Servo.class, "tilter_servo");
+            servoTilter = hardwareMap.get(Servo.class, "tilter_servo");
 
             double motorSpeed = 1;
-            double xrailSpeed= .5;
+            double xrailSpeed = .5;
             double position = servoTilter.getPosition();
             double increment = 0.01;
             double Max_pos = .3;
@@ -113,27 +112,26 @@ public class Original {
                 motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
 
 
-
-                if (gamepad1.left_stick_x > 0.05 || gamepad1.left_stick_x < -0.05 ) {
+                if (gamepad1.left_stick_x > 0.05 || gamepad1.left_stick_x < -0.05) {
                     //moves mecanum wheels left and right
-                    motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_x );
+                    motorLeftDown.setPower(motorSpeed * gamepad1.left_stick_x);
                     motorRightDown.setPower(motorSpeed * gamepad1.left_stick_x * -1);
                     motorLeftUp.setPower(motorSpeed * gamepad1.left_stick_x * -1);
-                    motorRightUp.setPower(motorSpeed * gamepad1.left_stick_x );
+                    motorRightUp.setPower(motorSpeed * gamepad1.left_stick_x);
                 }
 
                 //turn robot clockwise
-                if (gamepad1.right_stick_x !=0) {
+                if (gamepad1.right_stick_x != 0) {
                     motorLeftDown.setPower(motorSpeed * gamepad1.right_stick_x * -1);
-                    motorRightDown.setPower(motorSpeed * gamepad1.right_stick_x );
+                    motorRightDown.setPower(motorSpeed * gamepad1.right_stick_x);
                     motorLeftUp.setPower(motorSpeed * gamepad1.right_stick_x * -1);
-                    motorRightUp.setPower(motorSpeed * gamepad1.right_stick_x );
+                    motorRightUp.setPower(motorSpeed * gamepad1.right_stick_x);
 
                 }
                 //servoTilter.getPosition()
 
 
-                if ( gamepad2.dpad_down) {
+                if (gamepad2.dpad_down) {
                     //servoTilter.setPosition(position);
                     servoTilter.setPosition(Max_pos);
 
@@ -147,8 +145,6 @@ public class Original {
                 // Send calculated power to wheels
 
 
-
-
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
@@ -160,7 +156,7 @@ public class Original {
                 telemetry.addData("left_bumper", gamepad1.left_bumper);
                 telemetry.addData("xrail_motor", gamepad2.right_stick_y);
                 telemetry.addData("spinner_motor", gamepad2.left_stick_x);
-                telemetry.addData( "tilter_servo", servoTilter.getPosition());
+                telemetry.addData("tilter_servo", servoTilter.getPosition());
                 telemetry.update();
             }
         }

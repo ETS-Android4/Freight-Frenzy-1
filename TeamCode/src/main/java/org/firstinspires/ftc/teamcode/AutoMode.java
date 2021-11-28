@@ -30,36 +30,41 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
  * It uses the common Pushbot hardware class to define the drive on the robot.
  * The code is structured as a LinearOpMode
- *
+ * <p>
  * The code REQUIRES that you DO have encoders on the wheels,
- *   otherwise you would use: PushbotAutoDriveByTime;
- *
- *  This code ALSO requires that the drive Motors have been configured such that a positive
- *  power command moves them forwards, and causes the encoders to count UP.
- *
- *   The desired path in this example is:
- *   - Drive forward for 48 inches
- *   - Spin right for 12 Inches
- *   - Drive Backwards for 24 inches
- *   - Stop and close the claw.
- *
- *  The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
- *  that performs the actual movement.
- *  This methods assumes that each movement is relative to the last stopping place.
- *  There are other ways to perform encoder based moves, but this method is probably the simplest.
- *  This code uses the RUN_TO_POSITION mode to enable the Motor controllers to generate the run profile
- *
+ * otherwise you would use: PushbotAutoDriveByTime;
+ * <p>
+ * This code ALSO requires that the drive Motors have been configured such that a positive
+ * power command moves them forwards, and causes the encoders to count UP.
+ * <p>
+ * The desired path in this example is:
+ * - Drive forward for 48 inches
+ * - Spin right for 12 Inches
+ * - Drive Backwards for 24 inches
+ * - Stop and close the claw.
+ * <p>
+ * The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
+ * that performs the actual movement.
+ * This methods assumes that each movement is relative to the last stopping place.
+ * There are other ways to perform encoder based moves, but this method is probably the simplest.
+ * This code uses the RUN_TO_POSITION mode to enable the Motor controllers to generate the run profile
+ * <p>
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
@@ -70,13 +75,22 @@ enum rotate_dir {
     ROTATE_FORWARD_LEFT,
     ROTATE_BACKWARD_RIGHT,
     ROTATE_BACKWARD_LEFT,
-    ROTATE_NONE;
+    ROTATE_NONE
 }
 
-@Autonomous(name="AutoMode", group="Original")
+@Autonomous(name = "AutoMode", group = "Original")
 public class AutoMode extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
+    };
+    private static final String VUFORIA_KEY =
+            "AbLCOaz/////AAABmR2DgtefskiUrRY30djF+uECtyuQc2HSw9leOaPJwjtmYlbxf2KLy1gvTwjdaE2Ce0hoCO97GjrvMSdErzPBkWCOmrxNUxjB+5EJa0UzUcd5A7rsohIstWvQfBtojVQsGh+ykbTTCuRCugDUw9HyVcJO1s+AdaZnzQlqefgZz+531xPRIZAxrOxbGSLFp5TWtECnM13ERkMpJNxNWBS+SUxkAXyZj+cAKaelgEDUNvR12VMdRuy7um5EmhzCP8qP94gVmoV8ghWleypt9NxY05p5jxFgCTyh54GXyyWMuXSjSIIEHZkxab3k1G/U1QDLnlEbTeD0aIsq1ETrkRzXtqiGA2FAj7K4tsZeoZA4yhzc";
+    private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeftDriveUp = null;
     private DcMotor motorLeftDriveDown = null;
     private DcMotor motorRightDriveUp = null;
@@ -84,12 +98,35 @@ public class AutoMode extends LinearOpMode {
     private DcMotor motorXrailDrive = null;
     private DcMotor motorSpinnerDrive = null;
     private Servo servoTilterDrive = null;
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
+
 
     @Override
     public void runOpMode() {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        //initVuforia();
+        //initTfod();
+
+        if (tfod != null) {
+            tfod.activate();
+
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 16/9).
+            tfod.setZoom(2.5, 16.0 / 9.0);
+        }
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -124,9 +161,29 @@ public class AutoMode extends LinearOpMode {
 
 
         // Wait for the game to start (driver presses PLAY)
-        //waitForStart();
-        //runtime.reset();
+        waitForStart();
+        runtime.reset();
 
+        // drive to box from starting position
+        // check for cube
+        boolean foundCube = checkForCube();
+
+
+    }
+
+    private boolean checkForCube() {
+        if (tfod != null) {
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                for (Recognition recognition : updatedRecognitions) {
+                    //recognition.getLabel());
+                    if ("Cube".equals(recognition.getLabel())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void moveXrail(double inches) {
@@ -246,11 +303,10 @@ public class AutoMode extends LinearOpMode {
 
     }
 
-    private void make_a_turn(rotate_dir rot_dir, int z)
-    {
+    private void make_a_turn(rotate_dir rot_dir, int z) {
         int total_ticks = getTotal_ticks(z);
 
-        switch (rot_dir){
+        switch (rot_dir) {
             case ROTATE_FORWARD_RIGHT:
             case ROTATE_BACKWARD_RIGHT:
                 //Left front moves backward, Right front moves forward
@@ -316,8 +372,8 @@ public class AutoMode extends LinearOpMode {
         motorRightDriveUp.setPower(0);
     }
 
-    private void strafe_right(int x)
-    {   int total_ticks = getTotal_ticks(x);
+    private void strafe_right(int x) {
+        int total_ticks = getTotal_ticks(x);
         // Changing the motor direction to go backward
         motorLeftDriveDown.setDirection(DcMotor.Direction.REVERSE);
         motorRightDriveDown.setDirection(DcMotor.Direction.FORWARD);
@@ -334,7 +390,7 @@ public class AutoMode extends LinearOpMode {
         // Calculate the number of ticks corresponding to x inches
         // Request motor to RUN_TO_POSITION for those number of ticks
 
-        motorLeftDriveDown.setTargetPosition(total_ticks*-1);
+        motorLeftDriveDown.setTargetPosition(total_ticks * -1);
         motorRightDriveDown.setTargetPosition(total_ticks);
         motorLeftDriveUp.setTargetPosition(total_ticks);
         motorRightDriveUp.setTargetPosition(total_ticks * -1);
@@ -365,6 +421,41 @@ public class AutoMode extends LinearOpMode {
         motorLeftDriveUp.setPower(0);
         motorRightDriveUp.setPower(0);
     }
-}
+
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
 
 }
+
+
+
