@@ -110,6 +110,7 @@ public class AutoMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -145,6 +146,8 @@ public class AutoMode extends LinearOpMode {
         double increment = 0.01;
         double Max_pos = .3;
         double Min_pos = 0.0;
+        int count = 0;
+
 
         motorXrailDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorSpinnerDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -166,25 +169,32 @@ public class AutoMode extends LinearOpMode {
 
         // drive to box from starting position
         // check for cube
-        boolean foundCube = checkForCube();
-
+        boolean foundDuck = checkForDuck();
+        move_forward(17);
+        if (checkForDuck()) {
+            
+        }
 
     }
 
-    private boolean checkForCube() {
+    private boolean checkForDuck() {
         if (tfod != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
                 for (Recognition recognition : updatedRecognitions) {
                     //recognition.getLabel());
-                    if ("Cube".equals(recognition.getLabel())) {
-                        return true;
+                    if ("Duck".equals(recognition.getLabel())) {
+
+                    return true;
                     }
                 }
             }
         }
+
         return false;
+
     }
+
 
     private void moveXrail(double inches) {
         int ticks = inchesToTicksXrail(inches);
@@ -453,9 +463,9 @@ public class AutoMode extends LinearOpMode {
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        checkForDuck();
+
     }
 
+
 }
-
-
-
