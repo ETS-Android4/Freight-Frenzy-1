@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,9 +19,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Original", group = "Linear Opmode")
+@TeleOp(name = "newerOG", group = "Linear Opmode")
 //@Disabled
-public class Original extends LinearOpMode {
+public class newerOG extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -32,8 +31,8 @@ public class Original extends LinearOpMode {
     private DcMotor motorRightDown = null;
     private DcMotor motorXrail = null;
     private DcMotor motorSpinner = null;
-    private CRServo servoTilter = null;
-    //private Servo servoTilter= null;
+    //private CRServo servoTilter = null;
+    private Servo servoTilter= null;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -48,8 +47,8 @@ public class Original extends LinearOpMode {
         motorRightDown = hardwareMap.get(DcMotor.class, "right_motor_down");
         motorXrail = hardwareMap.get(DcMotor.class, "xrail_motor");
         motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
-        servoTilter = hardwareMap.get(CRServo.class, "tilter_servo");
-       // servoTilter = hardwareMap.get(Servo.class, "tilter_servo");
+        //servoTilter = hardwareMap.get(CRServo.class, "tilter_servo");
+            servoTilter = hardwareMap.get(Servo.class, "tilter_servo");
 
         double motorSpeed = 1;
         double frontspeed= .5;
@@ -59,7 +58,7 @@ public class Original extends LinearOpMode {
         //double increment = 0.01;
         //double Max_pos = 0.3;
         //double Min_pos = 0.0;
-        //double pos = 0.5;
+        //ouble pos = 0.5;
 
         motorXrail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -76,8 +75,8 @@ public class Original extends LinearOpMode {
         motorRightDown.setDirection(DcMotor.Direction.REVERSE);
         motorXrail.setDirection(DcMotor.Direction.REVERSE);
         motorSpinner.setDirection(DcMotor.Direction.FORWARD);
-        servoTilter.setDirection(CRServo.Direction.REVERSE);
-        //servoTilter.setDirection(Servo.Direction.REVERSE);
+       // servoTilter.setDirection(CRServo.Direction.REVERSE);
+        servoTilter.setDirection(Servo.Direction.REVERSE);
 
 
         // Wait for the game to start (driver presses PLAY)
@@ -120,12 +119,12 @@ public class Original extends LinearOpMode {
                 motorRightDown.setPower(motorSpeed * gamepad1.left_stick_y);
             }
 
-            motorXrail.setPower(xrailSpeed * gamepad2.right_stick_y);
+                motorXrail.setPower(xrailSpeed * gamepad2.right_stick_y);
             motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
            // */
             double strafeSpeed = .8;
             double strafeBad = 1;
-            if(!(gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.left_stick_y > 0.05 || gamepad1.left_stick_y < -0.05  )) {
+            if(!(gamepad1.dpad_left || gamepad1.dpad_right)) {
                 motorLeftDown.setPower(0);
                 motorRightDown.setPower(0);
                 motorLeftUp.setPower(0);
@@ -160,27 +159,19 @@ public class Original extends LinearOpMode {
 
 
             if (gamepad2.dpad_down) {
-
                 //servoTilter.setPosition(position);
-               servoTilter.setPower(-1);
+               // servoTilter.setPower(1);
                 //pos = pos - 0.05;
-               // servoTilter.setPosition(0); // 0 points to ground
+                servoTilter.setPosition(0);
             }
-            else if (gamepad2.dpad_up) {
-                servoTilter.setPower(1);
+            if (gamepad2.dpad_up) {
+               // servoTilter.setPower(-1);
                 //pos = pos + 0.05;
-              //  servoTilter.setPosition(1); // 1 points to wall
+                servoTilter.setPosition(1);
             }
-            else {
-                servoTilter.setPower(0);
+            if (gamepad2.dpad_left) {
+                servoTilter.setPosition(.6);
             }
-            /*if (gamepad2.dpad_left) {
-                servoTilter.setPower(1);
-              // servoTilter.setPosition(.5);
-            }
-            if (gamepad2.dpad_right) {
-                servoTilter.setPower(0);
-            }*/
            // servoTilter.setPower(0);
 
             // Send calculated power to wheels
@@ -197,10 +188,7 @@ public class Original extends LinearOpMode {
             telemetry.addData("left_bumper", gamepad1.left_bumper);
             telemetry.addData("xrail_motor", gamepad2.right_stick_y);
             telemetry.addData("spinner_motor", gamepad2.left_stick_x);
-          // telemetry.addData("tilter_servo", servoTilter.getPosition());
-            telemetry.addData("motorSpeedback" ,  motorLeftDown.getPower());
-            telemetry.addData("motorspeedfront" , motorLeftUp.getPower());
-            telemetry.addData("servopower" , servoTilter.getPower());
+           telemetry.addData("tilter_servo", servoTilter.getPosition());
             telemetry.update();
             idle();
         }
