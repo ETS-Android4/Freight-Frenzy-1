@@ -104,10 +104,11 @@ public class AutoMode extends LinearOpMode {
     private DcMotor motorRightDriveDown = null;
     private DcMotor motorXrailDrive = null;
     private DcMotor motorSpinnerDrive = null;
-    private Servo servoTilterDrive = null;
+    private DcMotor motorSpinnerDrive_left = null;
+    private CRServo servoTilterDrive = null;
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-    private Servo claw = null;
+
     private WebcamName webcam = null;
 
 
@@ -130,7 +131,7 @@ public class AutoMode extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(3, 16.0 / 9.0);
+            tfod.setZoom(2.8, 16.0 / 9.0);
         }
         telemetry.addData("Status", "Null");
         telemetry.update();
@@ -143,7 +144,8 @@ public class AutoMode extends LinearOpMode {
         motorRightDriveDown = hardwareMap.get(DcMotor.class, "right_motor_down");
         motorXrailDrive = hardwareMap.get(DcMotor.class, "xrail_motor");
         motorSpinnerDrive = hardwareMap.get(DcMotor.class, "spinner_motor");
-        servoTilterDrive = hardwareMap.get(Servo.class, "tilter_servo");
+        motorSpinnerDrive_left = hardwareMap.get(DcMotor.class, "spinner_left");
+        servoTilterDrive = hardwareMap.get(CRServo.class, "tilter_servo");
 
         double motorSpeed = 1;
         double xrailSpeed = .5;
@@ -152,6 +154,8 @@ public class AutoMode extends LinearOpMode {
         double Max_pos = .3;
         double Min_pos = 0.0;
         int count = 0;
+        long starttimer = System.currentTimeMillis();
+        long timepassed = System.currentTimeMillis() - starttimer;
 
 
         motorXrailDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -165,147 +169,65 @@ public class AutoMode extends LinearOpMode {
         motorRightDriveDown.setDirection(DcMotor.Direction.REVERSE);
         motorXrailDrive.setDirection(DcMotor.Direction.REVERSE);
         motorSpinnerDrive.setDirection(DcMotor.Direction.FORWARD);
-        servoTilterDrive.setDirection(Servo.Direction.REVERSE);
+        motorSpinnerDrive.setDirection(DcMotor.Direction.FORWARD);
+        servoTilterDrive.setDirection(CRServo.Direction.REVERSE);
 
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-        move_forward(4);
-
-        // drive to box from starting position
-        // check for cube
-        //boolean foundDuck = checkForDuck();
-
-        //move_forward(16);
-        //sleep(1000);
-/*
-        if (checkForDuck()) {
-            path1();
-        }
-        else{
-           strafe_right(8);
-           sleep(1000);
-           if(checkForDuck()){
-               path2();
-           }
-           else{
-           sleep(1000);
-               strafe_right(8);
-              path3();
-               }
-
-           }
-
- */
-
-       /*strafe_right(2);
-        if (checkForDuck()) {
-            path4();
-        }
-        else{
-            strafe_left(8);
-            sleep(1000);
-            if(checkForDuck()){
-                path5();
-            }
-            else{
-                sleep(1000);
-                strafe_left(8);
-                path6();
+        tilt(1100, .6);
+        move_forward(6);
+        sleep(1600);
 
 
-
-            }
-
-
-
-        }
-*/     // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 4);
-        //sleep(3000);
-        //if(checkForDuck()) {
-          //  move_forward(3);
         //}
-        //left side detection code will comment out if neccesary, right side for red
-        if(checkForDuck()) {
-            path2();
-        }
-        else{
-            move_forward(2);
-            make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 4);
-            sleep(1000);
-            if(checkForDuck()){
-                path1();
-            }
-            else{
-                make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 11);
-                sleep(1000);
-                path3();
-            }
-            //right side duck detection code will comment out if neccesary, left side for red
-            if(checkForDuck()) {
-                path5();
-            }
-            else {
-                move_forward(2);
-                make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 4);
-                sleep(1000);
-                if(checkForDuck()) {
-                    path4();
-                }
-                else {
-                    make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 11);
-                    sleep(1000);
-                    path3();
-                }
-            }
 
-       /* }
-        if(checkForDuck()) {
-            path5();
-        }
-        else {
-            move_forward(2);
-            make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 4);
+        //left side detection code will comment out if neccesary, right side for red
+        if (checkForDuck()) {
+            path2();
+        } else {
+            strafe_right(12);
             sleep(1000);
             if (checkForDuck()) {
-                path4();
+                path3();
             } else {
-                make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 8);
                 sleep(1000);
-                path6();
+                path1();
+            }
+        /*
+            if (checkForDuck()) {
+                path5();
+            } else {
+                strafe_left(9);
+                sleep(1000);
+                if (checkForDuck()) {
+                    path4();
+                } else {
+
+                    sleep(1000);
+                    path6();
+                }*/
             }
 
-        */
-        }
-
 
 
         }
 
-       // make_a_turn(rotate_dir.ROTATE_BACKWARD_LEFT, 20);
-       // move_backward(43);
-        //spin(30);
 
-          /*  strafe_right(42);
-            make_a_turn(rotate_dir.ROTATE_BACKWARD_LEFT, 8);
-            spin(8);
-            move_backward(14);
-*/
+//}
+
+
+
+
+
+
     //}
 
 
 
 
 
-       /* while (opModeIsActive()   ) {
-        sleep(2000);
-            if(checkForDuck()) {
-                telemetry.addData("Status", "SLEPT");
-                telemetry.update();
-            move_forward(4);
-        }
-        }*/
 //}
 
 
@@ -370,6 +292,7 @@ public class AutoMode extends LinearOpMode {
         return total_ticks;
     }
 
+
     private void move_forward(int x) {
         int total_ticks = getTotal_ticks(x);
 
@@ -382,7 +305,7 @@ public class AutoMode extends LinearOpMode {
 
         // reset encoder counts kept by motors.
         motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -455,7 +378,19 @@ public class AutoMode extends LinearOpMode {
         motorRightDriveDown.setPower(0.5);
         motorLeftDriveUp.setPower(0.5);
         motorRightDriveUp.setPower(0.5);
-
+        while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
     }
 
     private void make_a_turn(rotate_dir rot_dir, int z) {
@@ -662,60 +597,101 @@ public class AutoMode extends LinearOpMode {
       //  checkForDuck();
 
     }
-    private void tilt(){
-        servoTilterDrive.setDirection(Servo.Direction.FORWARD);
-        servoTilterDrive.setPosition(1);
-         }
+
+
+
+    private void tilt(long milliseconds, double power){
+        servoTilterDrive.setDirection(CRServo.Direction.FORWARD);
+        long starttime = System.currentTimeMillis();
+        servoTilterDrive.setPower(power);
+        while((System.currentTimeMillis() - starttime) < milliseconds) {
+
+        }
+        servoTilterDrive.setPower(0);
+
+    }
+
+
 
          private void spin(int x){
-             int total_ticks = getTotal_ticks(x);
+            // int total_ticks = getTotal_ticks(x);
         motorSpinnerDrive.setDirection(DcMotor.Direction.FORWARD);
-        motorSpinnerDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorSpinnerDrive.setDirection(DcMotor.Direction.FORWARD);
-        motorSpinnerDrive.setTargetPosition(total_ticks);
-        motorSpinnerDrive.setMode(DcMotor.RunMode. RUN_TO_POSITION);
-        motorSpinnerDrive.setPower(.5);
-
-
+        motorSpinnerDrive_left.setDirection(DcMotorSimple.Direction.FORWARD);
+       // motorSpinnerDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+     //   motorSpinnerDrive.setTargetPosition(total_ticks);
+       // motorSpinnerDrive.setMode(DcMotor.RunMode. RUN_TO_POSITION);
+             motorSpinnerDrive_left.setPower(.7);
+             motorSpinnerDrive.setPower(.7);
+             while (opModeIsActive() && motorSpinnerDrive.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+             {
+                 telemetry.addData("encoder-fwd-left-down", motorSpinnerDrive.getCurrentPosition() + "  busy=" + motorSpinnerDrive.isBusy());
+                 telemetry.update();
+                 idle();
+             }
+             sleep(4500);
+        motorSpinnerDrive.setPower(0);
+        motorSpinnerDrive_left.setPower(0);
          }
 
+
 public void path1() {
-    moveXrail(8);
-        make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
-        move_forward(20);
-        tilt();
+    moveXrail(11);
+       // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
+    strafe_right(15);
+        move_forward(13);
+        tilt(50,.2);
+    sleep(400);
+    tilt(150,.2);
+    move_backward(15);
+    strafe_right(51);
+    spin(200);
+    move_forward(20);
         //method for tilting servo to drop
 }
 public void path2(){
-    moveXrail(18);
-  make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
-  move_forward(20);
-    tilt();
+        sleep(100);
+    moveXrail(19);
+ // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
+    strafe_right(25);
+    sleep(600);
+    move_forward(14);
+    tilt(150,.2);
+    move_backward(15);
+    strafe_right(52);
+    spin(200);
+    move_forward(20);
+
     //method for servo to drop
 }
     public void path3(){
         //method for picking up blocks
-        moveXrail(28);
+        moveXrail(33);
+        strafe_right(15);
+        move_forward(15);
+        tilt(250,.2);
+        sleep(400);
+        move_backward(15);
+        strafe_right(52);
+        spin(10000);
         move_forward(20);
-        tilt();
         //method for servo to drop
     }
     public void path4(){
         moveXrail(8);
        make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT,12);
        move_forward(20);
-        tilt();
+        tilt(500,.2);
     }
     private void path5(){
         moveXrail(18);
        make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 9);
        move_forward(16);
-        tilt();
+        tilt(500,.2);
     }
     private void path6(){
         moveXrail(4);
         make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 2);
         move_forward(17);
-        tilt();
+        tilt(500,.2);
     }
     }

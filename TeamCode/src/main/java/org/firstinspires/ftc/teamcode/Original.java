@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -32,6 +33,7 @@ public class Original extends LinearOpMode {
     private DcMotor motorRightDown = null;
     private DcMotor motorXrail = null;
     private DcMotor motorSpinner = null;
+    private DcMotor leftSpinner = null;
     private CRServo servoTilter = null;
     //private Servo servoTilter= null;
     @Override
@@ -49,6 +51,7 @@ public class Original extends LinearOpMode {
         motorXrail = hardwareMap.get(DcMotor.class, "xrail_motor");
         motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
         servoTilter = hardwareMap.get(CRServo.class, "tilter_servo");
+        leftSpinner =hardwareMap.get(DcMotor.class, "spinner_left");
        // servoTilter = hardwareMap.get(Servo.class, "tilter_servo");
 
         double motorSpeed = 1;
@@ -63,6 +66,7 @@ public class Original extends LinearOpMode {
 
         motorXrail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorLeftUp.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightUp.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeftDown.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -76,6 +80,7 @@ public class Original extends LinearOpMode {
         motorRightDown.setDirection(DcMotor.Direction.REVERSE);
         motorXrail.setDirection(DcMotor.Direction.REVERSE);
         motorSpinner.setDirection(DcMotor.Direction.FORWARD);
+        leftSpinner.setDirection(DcMotor.Direction.FORWARD);
         servoTilter.setDirection(CRServo.Direction.REVERSE);
         //servoTilter.setDirection(Servo.Direction.REVERSE);
 
@@ -122,6 +127,7 @@ public class Original extends LinearOpMode {
 
             motorXrail.setPower(xrailSpeed * gamepad2.right_stick_y);
             motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
+            leftSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
            // */
             double strafeSpeed = .8;
             double strafeBad = 1;
