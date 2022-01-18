@@ -80,7 +80,7 @@ public class Original extends LinearOpMode {
         motorRightDown.setDirection(DcMotor.Direction.REVERSE);
         motorXrail.setDirection(DcMotor.Direction.REVERSE);
         motorSpinner.setDirection(DcMotor.Direction.FORWARD);
-        leftSpinner.setDirection(DcMotor.Direction.FORWARD);
+        leftSpinner.setDirection(DcMotor.Direction.REVERSE);
         servoTilter.setDirection(CRServo.Direction.REVERSE);
         //servoTilter.setDirection(Servo.Direction.REVERSE);
 

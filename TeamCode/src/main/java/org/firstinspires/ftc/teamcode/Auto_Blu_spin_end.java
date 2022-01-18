@@ -85,8 +85,8 @@ enum rotate_dir {
     ROTATE_NONE
 }
 
-@Autonomous(name = "AutoMode", group = "Original")
-public class AutoMode extends LinearOpMode {
+@Autonomous(name = "Auto_Blu_spin_end", group = "Original")
+public class Auto_Blu_spin_end extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] LABELS = {
@@ -176,14 +176,16 @@ public class AutoMode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-        tilt(1100, .6);
+        tilt(700, .6);
         move_forward(6);
         sleep(1600);
 
 
-        //}
 
-        //left side detection code will comment out if neccesary, right side for red
+
+
+// Blue side near pipe end
+       /*
         if (checkForDuck()) {
             path2();
         } else {
@@ -195,11 +197,16 @@ public class AutoMode extends LinearOpMode {
                 sleep(1000);
                 path1();
             }
-        /*
+            */
+
+
+
+// Blue side near Spinner end
+
             if (checkForDuck()) {
                 path5();
             } else {
-                strafe_left(9);
+                strafe_left(11);
                 sleep(1000);
                 if (checkForDuck()) {
                     path4();
@@ -207,12 +214,45 @@ public class AutoMode extends LinearOpMode {
 
                     sleep(1000);
                     path6();
-                }*/
+                }
             }
 
+// Red side near Spinner end
+/*
+        if (checkForDuck()) {
+            path8();
+        } else {
+            strafe_right(12);
+            sleep(1200);
+            if (checkForDuck()) {
+                path9();
+            } else {
+                sleep(1000);
+                path7();
+            }
+        }
 
+*/
+// Red side near pipe end
+/*
+        if (checkForDuck()) {
+            path11();
+        } else {
+            strafe_left(10);
+            sleep(1000);
+            if (checkForDuck()) {
+                path12();
+            } else {
+
+                sleep(1000);
+                path10();
+            }
+            */
 
         }
+
+
+
 
 
 //}
@@ -265,7 +305,7 @@ public class AutoMode extends LinearOpMode {
 
    private void moveXrail(double inches) {
         int ticks = inchesToTicksXrail(inches);
-        motorXrailDrive.setDirection(DcMotor.Direction.REVERSE);
+        motorXrailDrive.setDirection(DcMotor.Direction.FORWARD);
         motorXrailDrive.setTargetPosition(ticks);
         motorXrailDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorXrailDrive.setPower(0.5);
@@ -374,10 +414,10 @@ public class AutoMode extends LinearOpMode {
         motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        motorLeftDriveDown.setPower(0.5);
-        motorRightDriveDown.setPower(0.5);
-        motorLeftDriveUp.setPower(0.5);
-        motorRightDriveUp.setPower(0.5);
+        motorLeftDriveDown.setPower(1);
+        motorRightDriveDown.setPower(1);
+        motorLeftDriveUp.setPower(1);
+        motorRightDriveUp.setPower(1);
         while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
             telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
@@ -632,6 +672,25 @@ public class AutoMode extends LinearOpMode {
         motorSpinnerDrive.setPower(0);
         motorSpinnerDrive_left.setPower(0);
          }
+    private void spinop(int x){
+        // int total_ticks = getTotal_ticks(x);
+        motorSpinnerDrive.setDirection(DcMotor.Direction.REVERSE);
+        motorSpinnerDrive_left.setDirection(DcMotorSimple.Direction.REVERSE);
+        // motorSpinnerDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //   motorSpinnerDrive.setTargetPosition(total_ticks);
+        // motorSpinnerDrive.setMode(DcMotor.RunMode. RUN_TO_POSITION);
+        motorSpinnerDrive_left.setPower(.7);
+        motorSpinnerDrive.setPower(.7);
+        while (opModeIsActive() && motorSpinnerDrive.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorSpinnerDrive.getCurrentPosition() + "  busy=" + motorSpinnerDrive.isBusy());
+            telemetry.update();
+            idle();
+        }
+        sleep(4500);
+        motorSpinnerDrive.setPower(0);
+        motorSpinnerDrive_left.setPower(0);
+    }
 
 
 public void path1() {
@@ -677,21 +736,133 @@ public void path2(){
         //method for servo to drop
     }
     public void path4(){
-        moveXrail(8);
-       make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT,12);
-       move_forward(20);
-        tilt(500,.2);
+        tilt(200, .1);
+        moveXrail(11);
+        tilt(200, .1);
+        // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
+        strafe_left(15);
+        move_forward(13);
+        tilt(50,.2);
+        sleep(400);
+        tilt(250,.2);
+        move_backward(15);
+        strafe_right(56);
+        spin(200);
+        move_forward(19);
     }
     private void path5(){
-        moveXrail(18);
-       make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 9);
-       move_forward(16);
-        tilt(500,.2);
+        sleep(100);
+        tilt(200, .1);
+        moveXrail(19);
+        tilt(200, .1);
+        // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
+        strafe_left(25);
+        sleep(600);
+        move_forward(14);
+        tilt(250,.2);
+        move_backward(15);
+        strafe_right(52);
+        spin(200);
+        move_forward(20);
+
     }
     private void path6(){
-        moveXrail(4);
-        make_a_turn(rotate_dir.ROTATE_FORWARD_LEFT, 2);
-        move_forward(17);
-        tilt(500,.2);
+        tilt(200, .1);
+        sleep(300);
+        moveXrail(33);
+        tilt(200, .1);
+        strafe_left(13);
+        move_forward(15);
+        tilt(250,.2);
+        sleep(400);
+        move_backward(15);
+        strafe_right(52);
+        spin(10000);
+        move_forward(18);
+    }
+    private void path7(){
+        sleep(200);
+        moveXrail(11);
+        strafe_right(15);
+        move_forward(13);
+        tilt(50,.2);
+        sleep(800);
+        tilt(150,.2);
+        move_backward(14);
+        strafe_left(50);
+        spinop(200);
+        move_forward(18);
+    }
+    private void path8(){
+        sleep(200);
+        moveXrail(19);
+        // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
+        strafe_right(24);
+        sleep(800);
+        move_forward(15);
+        tilt(150,.2);
+        move_backward(14);
+        strafe_left(50);
+        spinop(200);
+        move_forward(18);
+    }
+    private void path9(){
+        sleep(300);
+        moveXrail(33);
+        strafe_right(15);
+        move_forward(13);
+        sleep(800);
+        tilt(250,.2);
+        sleep(500);
+        move_backward(14);
+        strafe_left(50);
+        spinop(10000);
+        move_forward(20);
+    }
+    private void path10(){
+        moveXrail(10);
+        tilt(100,.1);
+        // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
+        strafe_left(18);
+        sleep(200);
+        move_forward(12);
+        tilt(50,.2);
+        sleep(400);
+        tilt(150,.2);
+        move_backward(19);
+        strafe_left(50);
+        move_backward(4);
+        spinop(200);
+        move_forward(20);
+
+    }
+    private void path11(){
+        sleep(100);
+        moveXrail(19);
+        strafe_left(30);
+        sleep(600);
+        move_forward(12);
+        tilt(200,.2);
+        move_backward(17);
+        strafe_left(50);
+        move_backward(4);
+        spinop(200);
+        move_forward(20);
+
+    }
+    private void path12(){
+        moveXrail(33);
+        strafe_left(17);
+        sleep(200);
+        move_forward(12);
+        sleep(200);
+        tilt(250,.2);
+        sleep(400);
+        move_backward(19);
+        strafe_left(50);
+        move_backward(4);
+        spinop(10000);
+        move_forward(20);
+
     }
     }
