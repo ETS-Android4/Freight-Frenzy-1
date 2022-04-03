@@ -138,7 +138,7 @@ public class Auto_Blu_pipe_end extends LinearOpMode {
         waitForStart();
         runtime.reset();
         tilt(700, .6);
-        move_forward(6);
+        move_forward(7);
         sleep(1600);
 
 
@@ -376,10 +376,58 @@ public class Auto_Blu_pipe_end extends LinearOpMode {
         motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        motorLeftDriveDown.setPower(1);
-        motorRightDriveDown.setPower(1);
-        motorLeftDriveUp.setPower(1);
-        motorRightDriveUp.setPower(1);
+        motorLeftDriveDown.setPower(.5);
+        motorRightDriveDown.setPower(.5);
+        motorLeftDriveUp.setPower(.5);
+        motorRightDriveUp.setPower(.5);
+        while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
+    }
+    private void move_backwarde(int x) {
+        int total_ticks = getTotal_ticks(x);
+
+        // Changing the motor direction to go backward
+        motorLeftDriveDown.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveDown.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftDriveUp.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveUp.setDirection(DcMotor.Direction.REVERSE);
+
+
+        // reset encoder counts kept by motors.
+        motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the number of ticks corresponding to x inches
+        // Request motor to RUN_TO_POSITION for those number of ticks
+
+        motorLeftDriveDown.setTargetPosition(total_ticks);
+        motorRightDriveDown.setTargetPosition(total_ticks);
+        motorLeftDriveUp.setTargetPosition(total_ticks);
+        motorRightDriveUp.setTargetPosition(total_ticks);
+
+        motorLeftDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        motorLeftDriveDown.setPower(.5);
+        motorRightDriveDown.setPower(.5);
+        motorLeftDriveUp.setPower(.5);
+        motorRightDriveUp.setPower(.5);
         while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
             telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
@@ -663,7 +711,7 @@ public void path1() {
         tilt(50,.2);
     sleep(400);
     tilt(150,.2);
-    move_backward(15);
+    move_backward(16);
     strafe_right(51);
     spin(200);
     move_forward(20);
@@ -675,9 +723,9 @@ public void path2(){
  // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
     strafe_right(25);
     sleep(600);
-    move_forward(14);
+    move_forward(13);
     tilt(150,.2);
-    move_backward(15);
+    move_backward(16);
     strafe_right(52);
     spin(200);
     move_forward(20);
@@ -686,12 +734,12 @@ public void path2(){
 }
     public void path3(){
         //method for picking up blocks
-        moveXrail(33);
-        strafe_right(15);
-        move_forward(15);
-        tilt(250,.2);
+        moveXrail(36);
+        strafe_right(16);
+        move_forward(13);
+        tilt(300,.3);
         sleep(400);
-        move_backward(15);
+        move_backward(16);
         strafe_right(52);
         spin(10000);
         move_forward(20);

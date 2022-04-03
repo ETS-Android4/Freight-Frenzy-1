@@ -46,8 +46,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 
-@Autonomous(name = "Auto_Red_pipe_end", group = "Original")
-public class Auto_Red_pipe_end extends LinearOpMode {
+@Autonomous(name = "Auto_Red_spin_end_mech", group = "Original")
+public class Auto_Red_spin_end_mech extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] LABELS = {
@@ -69,8 +69,8 @@ public class Auto_Red_pipe_end extends LinearOpMode {
     private CRServo servoTilterDrive = null;
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
+
     private WebcamName webcam = null;
-    //private WebcamName Wecamright = null;
 
 
     @Override
@@ -137,8 +137,8 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-        tilt(700, .6);
-        move_forwarde(6);
+
+        move_forwarde(5);
         sleep(1600);
 
 
@@ -179,21 +179,14 @@ public class Auto_Red_pipe_end extends LinearOpMode {
             }
 */
 // Red side near Spinner end
-/*
-        if (checkForDuck()) {
-            path8();
-        } else {
-            strafe_right(12);
-            sleep(1200);
-            if (checkForDuck()) {
-                path9();
-            } else {
-                sleep(1000);
-                path7();
-            }
-        }
 
-*/
+      strafe_left(28);
+      move_backwarde(4);
+      spinop(600);
+      move_forward(20);
+
+
+
 // Red side near pipe end
 /*
         if (checkForDuck()) {
@@ -202,31 +195,18 @@ public class Auto_Red_pipe_end extends LinearOpMode {
             strafe_left(10);
             sleep(1000);
             if (checkForDuck()) {
-                path10();
+                path12();
             } else {
 
                 sleep(1000);
-                path12();
-            }
-        }
-
-        }
-
-*/
- if (checkForDuck()) {
-            path11();
-        } else {
-            strafe_left(10);
-            sleep(1000);
-            if (checkForDuck()) {
                 path10();
-            } else {
-
-                sleep(1000);
-                path12();
             }
+            */
+
         }
- }
+
+
+
 
 
 //}
@@ -485,10 +465,10 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        motorLeftDriveDown.setPower(.5);
-        motorRightDriveDown.setPower(.5);
-        motorLeftDriveUp.setPower(.5);
-        motorRightDriveUp.setPower(.5);
+        motorLeftDriveDown.setPower(.1);
+        motorRightDriveDown.setPower(.1);
+        motorLeftDriveUp.setPower(.1);
+        motorRightDriveUp.setPower(.1);
         while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
             telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
@@ -503,6 +483,8 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         motorLeftDriveUp.setPower(0);
         motorRightDriveUp.setPower(0);
     }
+
+
 
     private void make_a_turn(rotate_dir rot_dir, int z) {
         int total_ticks = getTotal_ticks(z);
@@ -641,7 +623,7 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         // Calculate the number of ticks corresponding to x inches
         // Request motor to RUN_TO_POSITION for those number of ticks
 
-        motorLeftDriveDown.setTargetPosition(total_ticks*-1 );
+        motorLeftDriveDown.setTargetPosition(total_ticks*-1);
         motorRightDriveDown.setTargetPosition(total_ticks) ;
         motorLeftDriveUp.setTargetPosition(total_ticks);
         motorRightDriveUp.setTargetPosition(total_ticks*-1);
@@ -685,7 +667,7 @@ public class Auto_Red_pipe_end extends LinearOpMode {
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -708,20 +690,8 @@ public class Auto_Red_pipe_end extends LinearOpMode {
       //  checkForDuck();
 
     }
-    private void initVuforiar(HardwareMap hardwareMap) {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcamright");
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-    }
 
     private void tilt(long milliseconds, double power){
         servoTilterDrive.setDirection(CRServo.Direction.FORWARD);
@@ -867,12 +837,12 @@ public void path2(){
         sleep(200);
         moveXrail(11);
         strafe_right(15);
-        move_forward(13);
-        tilt(50,.2);
-        sleep(800);
-        tilt(150,.2);
-        move_backward(14);
-        strafe_left(50);
+        move_forward(14);
+        sleep(200);
+        tilt(350,.2);
+        sleep(1000);
+        move_backward(17);
+        strafe_left(52);
         spinop(200);
         move_forward(18);
     }
@@ -882,10 +852,12 @@ public void path2(){
         // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
         strafe_right(24);
         sleep(800);
-        move_forward(15);
-        tilt(150,.2);
-        move_backward(14);
-        strafe_left(50);
+        move_forward(14);
+        sleep(300);
+        tilt(350,.2);
+        sleep(500);
+        move_backward(17);
+        strafe_left(52);
         spinop(200);
         move_forward(18);
     }
@@ -893,18 +865,17 @@ public void path2(){
         sleep(300);
         moveXrail(33);
         strafe_right(15);
-        move_forward(13);
+        move_forward(14);
         sleep(800);
-        tilt(250,.2);
-        sleep(500);
-        move_backward(14);
-        strafe_left(50);
-        move_backwarde(2);
+        tilt(350,.2);
+        sleep(700);
+        move_backward(17);
+        strafe_left(52);
         spinop(10000);
         move_forward(20);
     }
     private void path10(){
-        moveXrail(12);
+        moveXrail(10);
         tilt(100,.1);
         // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
         strafe_left(18);
@@ -912,9 +883,10 @@ public void path2(){
         move_forward(14);
         tilt(50,.2);
         sleep(400);
-        tilt(250,.2);
+        tilt(150,.2);
         move_backward(19);
-        strafe_left(52);
+        strafe_left(50);
+        move_backward(4);
         spinop(200);
         move_forward(20);
 
@@ -924,10 +896,11 @@ public void path2(){
         moveXrail(19);
         strafe_left(30);
         sleep(600);
-        move_forward(14);
-        tilt(250,.2);
-        move_backward(19);
-        strafe_left(51);
+        move_forward(12);
+        tilt(200,.2);
+        move_backward(17);
+        strafe_left(50);
+        move_backward(4);
         spinop(200);
         move_forward(20);
 
@@ -936,12 +909,13 @@ public void path2(){
         moveXrail(33);
         strafe_left(17);
         sleep(200);
-        move_forward(14);
+        move_forward(12);
         sleep(200);
         tilt(250,.2);
         sleep(400);
         move_backward(19);
         strafe_left(50);
+        move_backward(4);
         spinop(10000);
         move_forward(20);
 

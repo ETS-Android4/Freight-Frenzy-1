@@ -35,6 +35,7 @@ public class Original extends LinearOpMode {
     private DcMotor motorSpinner = null;
     private DcMotor leftSpinner = null;
     private CRServo servoTilter = null;
+    private DcMotor raisermoter = null;
     //private Servo servoTilter= null;
     @Override
     public void runOpMode() {
@@ -52,6 +53,7 @@ public class Original extends LinearOpMode {
         motorSpinner = hardwareMap.get(DcMotor.class, "spinner_motor");
         servoTilter = hardwareMap.get(CRServo.class, "tilter_servo");
         leftSpinner =hardwareMap.get(DcMotor.class, "spinner_left");
+       // raisermoter = hardwareMap.get(DcMotor.class,"motor_raiser");
        // servoTilter = hardwareMap.get(Servo.class, "tilter_servo");
 
         double motorSpeed = 1;
@@ -71,6 +73,7 @@ public class Original extends LinearOpMode {
         motorRightUp.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeftDown.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightDown.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //raisermoter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -82,6 +85,7 @@ public class Original extends LinearOpMode {
         motorSpinner.setDirection(DcMotor.Direction.FORWARD);
         leftSpinner.setDirection(DcMotor.Direction.REVERSE);
         servoTilter.setDirection(CRServo.Direction.REVERSE);
+      //  raisermoter.setDirection(DcMotorSimple.Direction.FORWARD);
         //servoTilter.setDirection(Servo.Direction.REVERSE);
 
 
@@ -92,10 +96,11 @@ public class Original extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (gamepad1.right_bumper) {
-                motorSpeed = 1;
+                motorSpeed =1;
             }
+
             if (gamepad1.left_bumper) {
-                motorSpeed = 0.5;
+                motorSpeed = .5;
             }
 
             // Setup a variable for each drive wheel to save power level for telemetry
@@ -126,8 +131,9 @@ public class Original extends LinearOpMode {
             }
 
             motorXrail.setPower(xrailSpeed * gamepad2.right_stick_y);
-            motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
-            leftSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
+
+            //motorSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
+           // leftSpinner.setPower(motorSpeed * Math.abs(gamepad2.left_stick_x));
            // */
             double strafeSpeed = .8;
             double strafeBad = 1;
@@ -137,6 +143,15 @@ public class Original extends LinearOpMode {
                 motorLeftUp.setPower(0);
                 motorRightUp.setPower(0);
             }
+            if(gamepad2.left_stick_x > 0.05 || gamepad2.left_stick_x < -0.05) {
+                motorSpinner.setPower(5 * gamepad2.left_stick_x);
+                leftSpinner.setPower(5 * gamepad2.left_stick_x);
+            }
+            if(gamepad2.left_stick_x < 0.05 || gamepad2.left_stick_x > -0.05){
+               motorSpinner.setPower(0);
+                leftSpinner.setPower(0);
+            }
+// To strafe left
             if (gamepad1.dpad_left) {
                 //moves mecanum wheels left and right
                 motorLeftDown.setPower(backspeed * -1);
@@ -144,7 +159,7 @@ public class Original extends LinearOpMode {
                 motorLeftUp.setPower(frontspeed);
                 motorRightUp.setPower(frontspeed * -1);
             }
-
+//To strafe right
             if (gamepad1.dpad_right) {
                 //moves mecanum wheels left and right
                 motorLeftDown.setPower(.47);

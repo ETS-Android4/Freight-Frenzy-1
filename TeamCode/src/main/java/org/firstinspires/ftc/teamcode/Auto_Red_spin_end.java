@@ -138,7 +138,7 @@ public class Auto_Red_spin_end extends LinearOpMode {
         waitForStart();
         runtime.reset();
         tilt(700, .6);
-        move_forward(6);
+        move_forwarde(7);
         sleep(1600);
 
 
@@ -183,7 +183,7 @@ public class Auto_Red_spin_end extends LinearOpMode {
         if (checkForDuck()) {
             path8();
         } else {
-            strafe_right(12);
+            strafe_right(10);
             sleep(1200);
             if (checkForDuck()) {
                 path9();
@@ -344,7 +344,56 @@ public class Auto_Red_spin_end extends LinearOpMode {
         motorRightDriveUp.setPower(0);
 
     }
+    private void move_forwarde(int x) {
+        int total_ticks = getTotal_ticks(x);
 
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        motorLeftDriveDown.setDirection(DcMotor.Direction.REVERSE);
+        motorRightDriveDown.setDirection(DcMotor.Direction.FORWARD);
+        motorLeftDriveUp.setDirection(DcMotor.Direction.REVERSE);
+        motorRightDriveUp.setDirection(DcMotor.Direction.FORWARD);
+
+        // reset encoder counts kept by motors.
+        motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the number of ticks corresponding to x inches
+        // Request motor to RUN_TO_POSITION for those number of ticks
+
+        motorLeftDriveDown.setTargetPosition(total_ticks);
+        motorRightDriveDown.setTargetPosition(total_ticks);
+        motorLeftDriveUp.setTargetPosition(total_ticks);
+        motorRightDriveUp.setTargetPosition(total_ticks);
+
+        motorLeftDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorLeftDriveDown.setPower(.5);
+        motorRightDriveDown.setPower(.5);
+        motorLeftDriveUp.setPower(.5);
+        motorRightDriveUp.setPower(.5);
+
+        while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
+
+    }
     private void move_backward(int x) {
         int total_ticks = getTotal_ticks(x);
 
@@ -375,10 +424,10 @@ public class Auto_Red_spin_end extends LinearOpMode {
         motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        motorLeftDriveDown.setPower(1);
-        motorRightDriveDown.setPower(1);
-        motorLeftDriveUp.setPower(1);
-        motorRightDriveUp.setPower(1);
+        motorLeftDriveDown.setPower(.5);
+        motorRightDriveDown.setPower(.5);
+        motorLeftDriveUp.setPower(.5);
+        motorRightDriveUp.setPower(.5);
         while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
             telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
@@ -393,6 +442,105 @@ public class Auto_Red_spin_end extends LinearOpMode {
         motorLeftDriveUp.setPower(0);
         motorRightDriveUp.setPower(0);
     }
+    private void move_backwarde(int x) {
+        int total_ticks = getTotal_ticks(x);
+
+        // Changing the motor direction to go backward
+        motorLeftDriveDown.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveDown.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftDriveUp.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveUp.setDirection(DcMotor.Direction.REVERSE);
+
+
+        // reset encoder counts kept by motors.
+        motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the number of ticks corresponding to x inches
+        // Request motor to RUN_TO_POSITION for those number of ticks
+
+        motorLeftDriveDown.setTargetPosition(total_ticks);
+        motorRightDriveDown.setTargetPosition(total_ticks);
+        motorLeftDriveUp.setTargetPosition(total_ticks);
+        motorRightDriveUp.setTargetPosition(total_ticks);
+
+        motorLeftDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        motorLeftDriveDown.setPower(.5);
+        motorRightDriveDown.setPower(.5);
+        motorLeftDriveUp.setPower(.5);
+        motorRightDriveUp.setPower(.5);
+        while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
+    }
+
+    private void move_backwards(int x) {
+        int total_ticks = getTotal_ticks(x);
+
+        // Changing the motor direction to go backward
+        motorLeftDriveDown.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveDown.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftDriveUp.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveUp.setDirection(DcMotor.Direction.REVERSE);
+
+
+        // reset encoder counts kept by motors.
+        motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the number of ticks corresponding to x inches
+        // Request motor to RUN_TO_POSITION for those number of ticks
+
+        motorLeftDriveDown.setTargetPosition(total_ticks);
+        motorRightDriveDown.setTargetPosition(total_ticks);
+        motorLeftDriveUp.setTargetPosition(total_ticks);
+        motorRightDriveUp.setTargetPosition(total_ticks);
+
+        motorLeftDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        motorLeftDriveDown.setPower(.1);
+        motorRightDriveDown.setPower(.1);
+        motorLeftDriveUp.setPower(.1);
+        motorRightDriveUp.setPower(.1);
+        while (opModeIsActive() && motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
+    }
+
+
 
     private void make_a_turn(rotate_dir rot_dir, int z) {
         int total_ticks = getTotal_ticks(z);
@@ -531,7 +679,7 @@ public class Auto_Red_spin_end extends LinearOpMode {
         // Calculate the number of ticks corresponding to x inches
         // Request motor to RUN_TO_POSITION for those number of ticks
 
-        motorLeftDriveDown.setTargetPosition(total_ticks*-1 );
+        motorLeftDriveDown.setTargetPosition(total_ticks*-1);
         motorRightDriveDown.setTargetPosition(total_ticks) ;
         motorLeftDriveUp.setTargetPosition(total_ticks);
         motorRightDriveUp.setTargetPosition(total_ticks*-1);
@@ -545,6 +693,55 @@ public class Auto_Red_spin_end extends LinearOpMode {
         motorRightDriveDown.setPower(0.25);
         motorLeftDriveUp.setPower(0.25);
         motorRightDriveUp.setPower(0.25);
+
+        //opModeIsActive()
+        while (motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left-down", motorLeftDriveDown.getCurrentPosition() + "  busy=" + motorLeftDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveDown.getCurrentPosition() + "  busy=" + motorRightDriveDown.isBusy());
+            telemetry.addData("encoder-fwd-left-up", motorLeftDriveUp.getCurrentPosition() + "  busy=" + motorLeftDriveUp.isBusy());
+            telemetry.addData("encoder-fwd-right-down", motorRightDriveUp.getCurrentPosition() + "  busy=" + motorRightDriveUp.isBusy());
+            telemetry.update();
+            idle();
+        }
+
+        motorLeftDriveDown.setPower(0);
+        motorRightDriveDown.setPower(0);
+        motorLeftDriveUp.setPower(0);
+        motorRightDriveUp.setPower(0);
+    }
+    private void strafe_lefty(int x) {
+        int total_ticks = getTotal_ticks(x);
+        // Changing the motor direction to go backward
+        motorLeftDriveDown.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveDown.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftDriveUp.setDirection(DcMotor.Direction.FORWARD);
+        motorRightDriveUp.setDirection(DcMotor.Direction.REVERSE);
+
+
+        // reset encoder counts kept by motors.
+        motorLeftDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveDown.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightDriveUp.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the number of ticks corresponding to x inches
+        // Request motor to RUN_TO_POSITION for those number of ticks
+
+        motorLeftDriveDown.setTargetPosition(total_ticks*-1);
+        motorRightDriveDown.setTargetPosition(total_ticks) ;
+        motorLeftDriveUp.setTargetPosition(total_ticks);
+        motorRightDriveUp.setTargetPosition(total_ticks*-1);
+
+        motorLeftDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveDown.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightDriveUp.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorLeftDriveDown.setPower(0.2);
+        motorRightDriveDown.setPower(0.2);
+        motorLeftDriveUp.setPower(0.2);
+        motorRightDriveUp.setPower(0.2);
 
         //opModeIsActive()
         while (motorLeftDriveDown.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
@@ -743,40 +940,45 @@ public void path2(){
     }
     private void path7(){
         sleep(200);
-        moveXrail(11);
-        strafe_right(15);
-        move_forward(13);
-        tilt(50,.2);
-        sleep(800);
-        tilt(150,.2);
-        move_backward(14);
-        strafe_left(50);
+        moveXrail(10);
+        strafe_right(14);
+        move_forward(15);
+        sleep(200);
+        tilt(350,.2);
+        sleep(1000);
+        move_backwarde(16);
+        strafe_lefty(52);
+        move_backwards(4);
         spinop(200);
         move_forward(18);
     }
     private void path8(){
         sleep(200);
-        moveXrail(19);
+        moveXrail(18);
         // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT, 9);
-        strafe_right(24);
+        strafe_right(23);
         sleep(800);
         move_forward(15);
-        tilt(150,.2);
-        move_backward(14);
-        strafe_left(50);
+        sleep(300);
+        tilt(350,.2);
+        sleep(500);
+        move_backwarde(16);
+        strafe_lefty(52);
+        move_backwards(4);
         spinop(200);
         move_forward(18);
     }
     private void path9(){
         sleep(300);
         moveXrail(33);
-        strafe_right(15);
-        move_forward(13);
+        strafe_right(14);
+        move_forward(15);
         sleep(800);
-        tilt(250,.2);
-        sleep(500);
-        move_backward(14);
-        strafe_left(50);
+        tilt(350,.2);
+        sleep(700);
+        move_backwarde(16);
+        strafe_lefty(52);
+        move_backwards(4);
         spinop(10000);
         move_forward(20);
     }
@@ -786,7 +988,7 @@ public void path2(){
         // make_a_turn(rotate_dir.ROTATE_FORWARD_RIGHT,12);
         strafe_left(18);
         sleep(200);
-        move_forward(12);
+        move_forward(14);
         tilt(50,.2);
         sleep(400);
         tilt(150,.2);

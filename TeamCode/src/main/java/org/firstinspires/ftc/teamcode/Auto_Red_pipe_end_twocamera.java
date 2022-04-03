@@ -38,16 +38,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
 
 import java.util.List;
 
 
-@Autonomous(name = "Auto_Red_pipe_end", group = "Original")
-public class Auto_Red_pipe_end extends LinearOpMode {
+@Autonomous(name = " Auto_Red_pipe_end_twocamera", group = "Original")
+public class Auto_Red_pipe_end_twocamera extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] LABELS = {
@@ -69,9 +71,10 @@ public class Auto_Red_pipe_end extends LinearOpMode {
     private CRServo servoTilterDrive = null;
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-    private WebcamName webcam = null;
-    //private WebcamName Wecamright = null;
-
+   // private WebcamName webcam = null;
+    //private WebcamName webcam2 = null;
+   SwitchableCamera dualCamera;
+   WebcamName webcam, webcam2;
 
     @Override
     public void runOpMode() {
@@ -107,6 +110,10 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         motorSpinnerDrive = hardwareMap.get(DcMotor.class, "spinner_motor");
         motorSpinnerDrive_left = hardwareMap.get(DcMotor.class, "spinner_left");
         servoTilterDrive = hardwareMap.get(CRServo.class, "tilter_servo");
+       // webcam = hardwareMap.get(WebcamName.class, "webcam1");
+        //Wecamright = hardwareMap.get(WebcamName.class, "webcam2");
+
+
 
         double motorSpeed = 1;
         double xrailSpeed = .5;
@@ -216,7 +223,8 @@ public class Auto_Red_pipe_end extends LinearOpMode {
  if (checkForDuck()) {
             path11();
         } else {
-            strafe_left(10);
+           // initVuforiar(hardwareMap);
+     toggleCamera();
             sleep(1000);
             if (checkForDuck()) {
                 path10();
@@ -681,14 +689,25 @@ public class Auto_Red_pipe_end extends LinearOpMode {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
+
+        //WebcamName webcam, webcam2;
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam");
-
+        //parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+         webcam = hardwareMap.get(WebcamName.class, "webcam");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcamright");
+       //parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
+        //parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam2");
+        SwitchableCameraName switchableName=ClassFactory.getInstance().getCameraManager().nameForSwitchableCamera(webcam, webcam2);
+       // parameters.cameraName = switchableName;
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+
+        parameters.cameraName = switchableName;
+        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        dualCamera = (SwitchableCamera)vuforia.getCamera();
+//toggleCamera();
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
@@ -708,20 +727,20 @@ public class Auto_Red_pipe_end extends LinearOpMode {
       //  checkForDuck();
 
     }
-    private void initVuforiar(HardwareMap hardwareMap) {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcamright");
+    void toggleCamera() {
+        if (dualCamera != null) {
+            if (dualCamera.getActiveCamera().equals(webcam)) {
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+                dualCamera.setActiveCamera(webcam2);
+            } else {
 
+                dualCamera.setActiveCamera(webcam);
+            }
+        }
     }
+
+
 
     private void tilt(long milliseconds, double power){
         servoTilterDrive.setDirection(CRServo.Direction.FORWARD);
